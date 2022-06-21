@@ -1,0 +1,63 @@
+{% extends 'backend/bases.html' %}
+
+{% block css %}
+    <link rel="stylesheet" href="/static/editor.md-master/css/editormd.css">
+{% endblock %}
+
+{% block article %}
+    <h2 class="text-center">编辑文章</h2>
+    <form action="" method="post">
+        {% csrf_token %}
+        <p>标题</p>
+            <input type="text" name="title" class="form-control" value="{{ article_obj.title }}">
+        <p>内容</p>
+            <textarea name="content" id="d1" cols="30" rows="10">{{ article_obj.content }}</textarea>
+        <p>分类</p>
+            {% for category in category_list %}
+                {% if article_obj.category == category %}
+                    <input type="radio" name="category" value="{{ category.pk }}" checked>{{ category.name }}
+                {% else %}
+                    <input type="radio" name="category" value="{{ category.pk }}">{{ category.name }}
+                {% endif %}
+            {% endfor %}
+        <p>标签</p>
+            {% for tag in tag_list %}
+                {% if tag in article_obj.tags.all %}
+                        <input type="checkbox" name="tag" value="{{ tag.pk }}" checked>{{ tag.name }}
+                {% else %}
+                        <input type="checkbox" name="tag" value="{{ tag.pk }}">{{ tag.name }}
+                {% endif %}
+            {% endfor %}
+    <p><input type="submit" class="btn btn-success"></p>
+
+    </form>
+
+{% endblock %}
+
+{% block js %}
+{#    <script src="/static/editor.md-master/editormd.js"></script>#}
+{#    <script src="https://cdn.bootcss.com/jquery/1.11.3/jquery.min.js"></script>#}
+{#    <script type="text/javascript">#}
+{#    $(function() {#}
+{#        var editor = editormd("d1", {#}
+{#            width  : '600px',#}
+{#            height : '600px',#}
+{#            path   : "/static/editor.md-master/lib/"#}
+{#        });#}
+{#    });#}
+{#</script>#}
+        <script charset="utf-8" src="/static/kindeditor/kindeditor-all-min.js"></script>
+        <script>
+                KindEditor.ready(function(K) {
+                        window.editor = K.create('#d1',{
+                            width: '100%',
+                            height:'600px',
+                            resizeType:1,
+                            uploadJson : '/file_upload/',
+                            extraFileUploadParams : {
+                                    csrfmiddlewaretoken:'{{ csrf_token }}'
+                            }
+                        });
+                });
+        </script>
+{% endblock %}

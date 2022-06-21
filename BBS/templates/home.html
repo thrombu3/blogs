@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="https://cdn.bootcss.com/twitter-bootstrap/3.4.1/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.bootcss.com/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://cdn.bootcss.com/twitter-bootstrap/3.4.1/js/bootstrap.min.js"></script>
+    {% block css %}
+
+    {% endblock %}
+</head>
+<body>
+<!--导航条开始-->
+<nav class="navbar navbar-inverse">
+  <div class="container-fluid">
+    <!-- Brand and toggle get grouped for better mobile display -->
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="#">
+          {% block title %}
+            BBS
+          {% endblock %}
+      </a>
+    </div>
+
+    <!-- Collect the nav links, forms, and other content for toggling -->
+    <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+      <ul class="nav navbar-nav">
+        <li class="active"><a href="/home/">文章 <span class="sr-only">(current)</span></a></li>
+        <li><a href="#">随笔</a></li>
+        <li class="dropdown">
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">更多详情 <span class="caret"></span></a>
+          <ul class="dropdown-menu">
+            <li><a href="#">Action</a></li>
+            <li><a href="#">Another action</a></li>
+            <li><a href="#">Something else here</a></li>
+            <li role="separator" class="divider"></li>
+            <li><a href="#">Separated link</a></li>
+            <li role="separator" class="divider"></li>
+            <li><a href="#">One more separated link</a></li>
+          </ul>
+        </li>
+      </ul>
+      <form class="navbar-form navbar-left">
+        <div class="form-group">
+          <input type="text" class="form-control" placeholder="Search">
+        </div>
+        <button type="submit" class="btn btn-default">Submit</button>
+      </form>
+      <ul class="nav navbar-nav navbar-right">
+          {% if request.user.is_authenticated %}
+                                <li style="border: 3px solid white;display: inline-block;height: 40px;border-radius: 50%;width: 40px;margin-top: 5px;overflow: hidden">
+                    <img src="/media/{{ request.user.avatar }}" alt="" style="max-width: 100%">
+                </li>
+                <li><a href="#">{{ request.user.username }}</a></li>
+                <li class="dropdown">
+                  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">更多操作 <span class="caret"></span></a>
+                  <ul class="dropdown-menu">
+                    <li><a href="#" data-toggle="modal" data-target="#myModal">修改密码</a></li>
+                    <li><a href="#">修改头像</a></li>
+                    <li><a href="/backend/">后台管理</a></li>
+                    <li role="separator" class="divider"></li>
+                    <li><a href="/logout/">注销登录</a></li>
+                  </ul>
+                </li>
+              {% else %}
+                <li><a href="/register/">注册</a></li>
+                <li><a href="/login/">登录</a></li>
+          {% endif %}
+      </ul>
+    </div><!-- /.navbar-collapse -->
+  </div><!-- /.container-fluid -->
+</nav>
+<!-- Modal -->
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+
+      <div class="modal-body">
+        <h2 class="text-center">修改密码</h2>
+          <form id="form">
+              {% csrf_token %}
+              <div class="form-group">
+                  <label for="">用户名:</label>
+                  <input type="text" value="{{ request.user.username }}" disabled class="form-control">
+              </div>
+              <div class="form-group">
+                  <label for="">旧密码:</label>
+                  <input type="text" name="old_password" class="form-control">
+              </div>
+              <div class="form-group">
+                  <label for="">新密码:</label>
+                  <input type="text" name="new_password" class="form-control">
+              </div>
+              <div class="form-group">
+                  <label for="">确认密码:</label>
+                  <input type="text" name="confirm_password" class="form-control">
+              </div>
+              <input type="button" value="修改密码" id="subBtn" class="btn btn-warning btn-block">
+          </form>
+      </div>
+      <div class="modal-footer">
+          <span style="color: red" id="error"></span>
+        <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+        <button type="button" class="btn btn-primary">确认</button>
+      </div>
+    </div>
+  </div>
+</div>
+<!--导航条结束-->
+
+<div class="container-fluid">
+    <div class="row">
+        {% block content %}
+            <div class="col-md-2">
+            <div class="panel panel-primary">
+              <div class="panel-heading">
+                <h3 class="panel-title">重金求子</h3>
+              </div>
+              <div class="panel-body">
+                联系方式:13838384388
+              </div>
+            </div>
+            <div class="panel panel-danger">
+              <div class="panel-heading">
+                <h3 class="panel-title">百万大奖</h3>
+              </div>
+              <div class="panel-body">
+                详情联系:DBJ666Wx
+              </div>
+            </div>
+            <div class="panel panel-success">
+              <div class="panel-heading">
+                <h3 class="panel-title">真人博彩</h3>
+              </div>
+              <div class="panel-body">
+                快来玩耍:19929392122
+              </div>
+            </div>
+        </div>
+            <div class="col-md-8">
+            {% for article_obj in article_queryset %}
+                <div class="media">
+                <h4 class="media-heading"><a href="/{{ article_obj.blog.userinfo.username }}/articles/{{ article_obj.pk }}/">{{ article_obj.title }}</a></h4>
+                  <div class="media-left">
+                    <a href="#">
+                      <img class="media-object" src="/media/{{ article_obj.blog.userinfo.avatar }}" alt="..." width="80">
+                    </a>
+                  </div>
+                  <div class="media-body">
+                    {{ article_obj.desc }}
+                  </div>
+                    <br>
+                    <div>
+                        <a href="/{{ article_obj.blog.userinfo.username }}/">{{ article_obj.blog.userinfo.username }}&nbsp;&nbsp;</a>
+                        <span>{{ article_obj.create_time|date:'Y-m-d H:i:s' }}&nbsp;&nbsp;</span>
+                        <span><span class="glyphicon glyphicon-thumbs-up"></span>{{ article_obj.up_num }}&nbsp;&nbsp;</span>
+                        <span><span class="glyphicon glyphicon-thumbs-down"></span>{{ article_obj.down_num }}&nbsp;&nbsp;</span>
+                        <span><span class="glyphicon glyphicon-comment"></span>{{ article_obj.comment_num }}&nbsp;&nbsp;</span>
+                    </div>
+
+                </div>
+                <hr>
+                            {% endfor %}
+
+        </div>
+            <div class="col-md-2">
+            <div class="panel panel-primary">
+              <div class="panel-heading">
+                <h3 class="panel-title">重金求子</h3>
+              </div>
+              <div class="panel-body">
+                联系方式:13838384388
+              </div>
+            </div>
+            <div class="panel panel-danger">
+              <div class="panel-heading">
+                <h3 class="panel-title">百万大奖</h3>
+              </div>
+              <div class="panel-body">
+                详情联系:DBJ666Wx
+              </div>
+            </div>
+            <div class="panel panel-success">
+              <div class="panel-heading">
+                <h3 class="panel-title">真人博彩</h3>
+              </div>
+              <div class="panel-body">
+                快来玩耍:19929392122
+              </div>
+            </div>
+        </div>
+        {% endblock %}
+    </div>
+</div>
+<script>
+    $('#subBtn').click(function () {
+        let dataDict = {};
+        $.each($('#form').serializeArray(),function (index,dictObj) {
+            dataDict[dictObj.name] = dictObj.value
+        })
+        $.ajax({
+            url:'/set_pwd/',
+            type:'post',
+            data:dataDict,
+            success:function (args) {
+                if (args.code === 10000){
+                    window.location.href = args.url
+                }else{
+                    $('#error').text(args.msg)
+                }
+            }
+        })
+    })
+</script>
+{% block js %}
+
+{% endblock %}
+</body>
+</html>

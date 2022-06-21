@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="https://cdn.bootcss.com/twitter-bootstrap/3.4.1/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.bootcss.com/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://cdn.bootcss.com/twitter-bootstrap/3.4.1/js/bootstrap.min.js"></script>
+</head>
+<body>
+<div class="container-fluid">
+    <div class="row">
+        <h2 class="text-center">用户注册</h2>
+        <div class="col-md-8 col-md-offset-2">
+            <form id="form">
+                {% csrf_token %}
+                <!--获取普通数据-->
+                {% for form in form_obj %}
+                    <div class="form-group">
+                        <label for="{{ form.auto_id }}">{{ form.label }}</label>  <!--form.auto_id自动产生对应绑定的标签id值-->
+                        {{ form }}
+                        <span class="errors pull-right" style="color: red"></span>
+                    </div>
+                {% endfor %}
+                <!--获取用户头像-->
+                <div class="form-group">
+                    <p><label for="avatar">头像
+                        <img src="/static/img/default.jpg" alt="" width="120" id="img">
+                    </label></p>
+
+                    <input type="file" name="avatar" id="avatar" style="display: none">
+                </div>  <!--该div仅仅是增加了上下两个标签的距离 更好看一些-->
+
+                <input type="button" value='注册' class="btn btn-primary btn-block" id="subBtn">
+            </form>  <!--仅仅用一个form标签  不使用它的提交功能-->
+        </div>
+    </div>
+</div>
+<script>
+    // 用户头像实时展示
+    $('#avatar').change(function () {
+        // 1.产生一个文件阅读器对象
+        let myFileReader = new FileReader();
+        // 2.获取用户上传的头像文件
+        let avatarObj = this.files[0];
+        // 3.将文件对象交给阅读器加载
+        myFileReader.readAsDataURL(avatarObj)  // IO操作 需要消耗时间 但是是异步
+        // 4.修改img标签的src属性
+        // 等待文件阅读器对象加载完毕之后再修改src属性
+        myFileReader.onload = function(){
+            $('#img').attr('src',myFileReader.result)
+        }
+    })
+
+    // 绑定点击事件 提交数据
+    $('#subBtn').click(function () {
+        // ajax携带文件数据 需要利用内置对象
+        let myFormData = new FormData();
+        // 添加普通数据  利用form标签自带的序列化功能(一次性获取所有的普通键值对数据)
+        {#console.log($('#form').serializeArray())#}
+        $.each($('#form').serializeArray(),function (index,dictObj) {
+            myFormData.append(dictObj.name,dictObj.value)
+        })
+        // 添加文件数据
+        myFormData.append('avatar',$('#avatar')[0].files[0])
+        // 发送ajax请求
+        $.ajax({
+            url:'',
+            type:'post',
+            data:myFormData,
+            contentType:false,
+            processData:false,
+            success:function (args) {
+                if (args.code===10000){
+                    // 注册成功跳转到登录页面
+                    window.location.href = args.url
+                }else{
+                    // 获取到了所有的字段错误提示 如何对应展示???
+                    // 研究发现 渲染出来的标签id值都是 id_字段名  而后端返回的错误提示键是字段名 所以拼接即可
+                    $.each(args.msg, function (i,j) {
+                        let eleId = '#id_' + i;
+                        $(eleId).next().text(j[0]).parent().addClass('has-error')
+                    })
+                }
+            }
+        })
+    })
+
+    // 绑定聚焦事件 点击移除错误提示
+    $('input').focus(function () {
+        $(this).next().text('').parent().removeClass('has-error')
+    })
+</script>
+</body>
+</html>
